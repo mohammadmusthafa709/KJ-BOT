@@ -1,91 +1,62 @@
 import requests
 from bs4 import BeautifulSoup
-import re
-import time
 
-# Base website URL
-BASE_URL = "https://www.kristujayanti.edu.in/"
-visited_links = set()  # To avoid visiting the same page multiple times
+# List of target URLs
+urls = [
+    "https://kristujayanti.edu.in/",
+    "https://www.kristujayanti.edu.in/about/profile.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Sciences/department-forensicscience/MSc-Forensic-Science.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Commerce-Management/economics/bsc_economics.php",
+    "https://www.kristujayanti.edu.in/about/history.php",
+    "https://www.kristujayanti.edu.in/about/Governing-Body.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Commerce-Management/economics/economics.php",
+    "https://www.kristujayanti.edu.in/about/autonomous.php",
+    "https://www.kristujayanti.edu.in/home/Jayantian-Code-Conduct.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Commerce-Management/Professional-Management-Studies/bba-Aviation-Management.php",
+    "https://www.kristujayanti.edu.in/research/research-centres.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Commerce-Management/Professional-Management-Studies/bba-Business-Analytics.php",
+    "https://www.kristujayanti.edu.in/placements/index.php",
+    "https://www.kristujayanti.edu.in/studentlife/art_culture.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Commerce-Management/commerce/commerce.php",
+    "https://www.kristujayanti.edu.in/studentlife/jayantian-extension-services.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Sciences/department-cs-pg/",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Sciences/department-physical-sciences/BSc-STCS.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Sciences/department-lifescience/Lifescintro.php",
+    "https://www.kristujayanti.edu.in/collaborations/collaborations.php",
+    "https://www.kristujayanti.edu.in/campus/academic_arena.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Sciences/department-cs-ug/computer_science.php",
+    "https://www.kristujayanti.edu.in/academics/College-Arts-Science-Commerce/Faculty-Sciences/department-cs-ug/bca.php",
+    "https://www.kristujayanti.edu.in/home/contact-us.php",
+    "https://www.kristujayanti.edu.in/achivements/college.php",
+]
 
-# Function to scrape a single page
-def scrape_page(url):
-    """Scrapes text content from a given URL."""
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
+# File to store scraped data
+output_file = "scraped_data.txt"
+
+with open(output_file, "w", encoding="utf-8") as file:
+    for url in urls:
+        try:
+            print(f"Scraping: {url}")
+
+            # Request the page
+            response = requests.get(url)
+            if response.status_code != 200:
+                print(f"❌ Failed to fetch {url}")
+                continue
+
+            # Parse HTML
             soup = BeautifulSoup(response.text, "html.parser")
-            text_elements = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "li"])
-            
-            extracted_text = []
-            for element in text_elements:
-                cleaned_text = re.sub(r'\s+', ' ', element.get_text(strip=True))
-                extracted_text.append(cleaned_text)
-            
-            return "\n".join(extracted_text)
-        else:
-            print(f"❌ Failed to fetch {url} | Status Code: {response.status_code}")
-            return None
-    except Exception as e:
-        print(f"⚠️ Error scraping {url}: {e}")
-        return None
 
-# Function to get all internal links from a page
-def get_internal_links(url):
-    """Finds all internal links on a webpage."""
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-            links = []
-            
-            for a_tag in soup.find_all("a", href=True):
-                link = a_tag["href"]
-                
-                # Ensure link is within the same website
-                if link.startswith("/") or BASE_URL in link:
-                    full_link = link if BASE_URL in link else BASE_URL + link.lstrip("/")
-                    
-                    if full_link not in visited_links:
-                        links.append(full_link)
-                        visited_links.add(full_link)
-            
-            return links
-        else:
-            return []
-    except Exception as e:
-        print(f"⚠️ Error fetching links from {url}: {e}")
-        return []
+            # Extract text from <p> and heading tags <h1>-<h6>
+            paragraphs = soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6"])
+            text_content = "\n".join([p.get_text(strip=True) for p in paragraphs if p.get_text(strip=True)])
 
-# Main function to scrape the website
-def scrape_website(start_url):
-    """Scrapes all internal pages of the website."""
-    pages_to_scrape = [start_url]
-    all_data = []
+            # Write to file
+            file.write(f"\n\n===== {url} =====\n\n")
+            file.write(text_content + "\n")
 
-    while pages_to_scrape:
-        current_url = pages_to_scrape.pop(0)
-        if current_url in visited_links:
-            continue
+        except Exception as e:
+            print(f"⚠️ Error scraping {url}: {e}")
 
-        print(f"🔍 Scraping: {current_url}")
-        visited_links.add(current_url)
-
-        # Scrape current page
-        page_text = scrape_page(current_url)
-        if page_text:
-            all_data.append(f"URL: {current_url}\n{page_text}\n" + "-"*80)
-
-        # Find new links
-        new_links = get_internal_links(current_url)
-        pages_to_scrape.extend(new_links)
-
-        time.sleep(1)  # Be nice to the server :)
-
-    # Save all extracted data
-    with open("college_full_data.txt", "w", encoding="utf-8") as file:
-        file.write("\n".join(all_data))
-
-    print("✅ Full website scraping complete! Data saved to college_full_data.txt")
-
-# Start the scraping process
-scrape_website(BASE_URL)
+print("\n✅ Scraping complete! Data saved in 'scraped_data.txt'.")
