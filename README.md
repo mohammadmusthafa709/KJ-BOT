@@ -17,6 +17,13 @@ This chatbot is designed to assist users by answering their queries about Kristu
 ### 4️⃣ Streamlit UI for Chat Interface 💬
 - Implemented an interactive chatbot interface using **Streamlit** for real-time query resolution.
 - The chatbot provides confident and informative answers, avoiding vague responses.
+
+![Screenshot 2025-03-23 143214](https://github.com/user-attachments/assets/04c683f8-ef6e-4d10-83c1-551b70de4236)
+
+![Screenshot 2025-03-23 143228](https://github.com/user-attachments/assets/2486a08c-2af1-4a22-b2e1-4c20f6c2e46c)
+
+![Screenshot 2025-03-23 143256](https://github.com/user-attachments/assets/03f4bf82-72fe-4814-8f7c-f3d7bcd06c53)
+
 ## 🚀 Future Improvements
 - ✅ Expand the dataset to cover all departments and college facilities.
 - ✅ Enhance the chatbot UI with interactive elements in Streamlit.
