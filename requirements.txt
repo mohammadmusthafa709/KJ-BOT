@@ -1,2 +1,9 @@
 requests
 BeautifulSoup4
+faiss-cpu
+numpy
+pandas
+streamlit
+sentence-transformers
+groq
+dotenv
