@@ -1,1 +1,8 @@
 venv
+.env
+cleaned_data.txt
+college_faiss.index
+college_full_data.txt
+scraped_data.txt
+structured_data.json
+urls_mapping.json
