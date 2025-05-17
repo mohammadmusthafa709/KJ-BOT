@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 # Define the base URL of your college website
-base_url = "https://www.kristujayanti.edu.in/"
+base_url = "https://gcet.edu.in/"
 
 # Send a request to the homepage
 homepage = requests.get(base_url)
